@@ -1,5 +1,4 @@
 import * as express from 'express';
-import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import routes from '../api';
 import config from '../config';
@@ -30,7 +29,8 @@ export default ({ app }: { app: express.Application }) => {
   app.use(require('method-override')());
 
   // Middleware that transforms the raw string of req.body into json
-  app.use(bodyParser.json());
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: false }));
 
   // Load API routes
   app.use(config.api.prefix, routes);
