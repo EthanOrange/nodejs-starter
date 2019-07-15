@@ -1,31 +1,43 @@
-import { IUser } from '../interfaces/IUser';
+import { IBlog } from '../interfaces/IBlog';
+import * as mongoosePaginate from 'mongoose-paginate-v2'
 import * as mongoose from 'mongoose';
 
-const User = new mongoose.Schema(
+const Blog = new mongoose.Schema(
   {
-    name: {
+    title: {
       type: String,
-      required: [true, 'Please enter a full name'],
+      required: [true, 'Please enter a post title'],
       index: true,
+      unique: true
     },
 
-    email: {
+    meta: {
+      view: {
+        type: Number,
+        default: 0
+      },
+      like: {
+        type: Number,
+        default: 0
+      },
+    },
+
+    desc: String,
+
+    content: {
       type: String,
-      lowercase: true,
-      unique: true,
-      index: true,
+      required: [true, 'Please enter poster content']
     },
 
-    password: String,
-
-    salt: String,
-
-    role: {
-      type: String,
-      default: 'user',
-    },
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    }
   },
   { timestamps: true },
 );
 
-export default mongoose.model<IUser & mongoose.Document>('User', User);
+Blog.plugin(mongoosePaginate)
+
+export default mongoose.model<IBlog & mongoose.Document>('Blog', Blog);

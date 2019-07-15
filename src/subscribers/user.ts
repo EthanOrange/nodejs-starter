@@ -18,7 +18,7 @@ export default class UserSubscriber {
    */
   @On(events.user.signIn)
   public onUserSignIn({ _id }: Partial<IUser>) {
-    const Logger = Container.get('logger');
+    const Logger:any = Container.get('logger');
 
     try {
       const UserModel = Container.get('UserModel') as mongoose.Model<IUser & mongoose.Document>;
@@ -33,7 +33,7 @@ export default class UserSubscriber {
   }
   @On(events.user.signUp)
   public onUserSignUp({ name, email, _id }: Partial<IUser>) {
-    const Logger = Container.get('logger');
+    const Logger:any = Container.get('logger');
 
     try {
       /**
