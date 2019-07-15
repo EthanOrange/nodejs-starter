@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Container } from 'typedi';
 import CommentService from '../../services/comment';
-import { IComment, ICommentInputDTO } from '../../interfaces/IComment';
+import { ICommentInputDTO } from '../../interfaces/IComment';
 import middlewares from '../middlewares';
 import { celebrate, Joi } from 'celebrate';
 
