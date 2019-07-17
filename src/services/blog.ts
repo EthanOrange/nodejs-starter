@@ -6,6 +6,7 @@ export default class BlogService {
   constructor(
       @Inject('blogModel') private blogModel,
       @Inject('logger') private logger,
+      @Inject('redis') private redis,
     ) {}
 
   public async Create(blogInputDTO: IBlogInputDTO, user_id: string): Promise<object> {
@@ -51,11 +52,17 @@ export default class BlogService {
 
   public async Detail(_id: string): Promise<object> {
     try {
+      const cacheObj = await this.redis.getAsync(_id)
+      if (cacheObj) {
+        return JSON.parse(cacheObj)
+      }
       const blogRecord = await this.blogModel.findOne({ _id }).populate('author', '-password -salt -__v -updatedAt -createdAt');
       if (!blogRecord) {
         throw new Error('blog can not be founded!')
       }
-      return blogRecord.toObject()
+      const blogRecordJson = blogRecord.toObject()
+      await this.redis.setAsync(_id, JSON.stringify(blogRecordJson))
+      return blogRecordJson
     } catch (e) {
       this.logger.error(e);
       throw e;
