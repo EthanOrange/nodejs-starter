@@ -11,16 +11,17 @@ const Blog = new mongoose.Schema(
       unique: true
     },
 
-    meta: {
-      view: {
-        type: Number,
-        default: 0
-      },
-      like: {
-        type: Number,
-        default: 0
-      },
+    view: {
+      type: Number,
+      default: 0
     },
+    like: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        unique: true
+      }
+    ],
 
     desc: String,
 

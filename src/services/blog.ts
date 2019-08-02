@@ -52,16 +52,12 @@ export default class BlogService {
 
   public async Detail(_id: string): Promise<object> {
     try {
-      const cacheObj = await this.redis.getAsync(_id)
-      if (cacheObj) {
-        return JSON.parse(cacheObj)
-      }
+      await this.blogModel.updateOne({ _id }, { view: {  } })
       const blogRecord = await this.blogModel.findOne({ _id }).populate('author', '-password -salt -__v -updatedAt -createdAt');
       if (!blogRecord) {
         throw new Error('blog can not be founded!')
       }
       const blogRecordJson = blogRecord.toObject()
-      await this.redis.setAsync(_id, JSON.stringify(blogRecordJson))
       return blogRecordJson
     } catch (e) {
       this.logger.error(e);
@@ -81,6 +77,26 @@ export default class BlogService {
         throw new Error('blog can not be founded!')
       }
       return list
+    } catch (e) {
+      this.logger.error(e);
+      throw e;
+    }
+  }
+
+  public async Like(_id, user_id): Promise<{}> {
+    try {
+      const blogRecord = await this.blogModel.findByIdAndUpdate({_id}, { $addToSet: { like: user_id }}, { new: true })
+      return blogRecord.toObject()
+    } catch (e) {
+      this.logger.error(e);
+      throw e;
+    }
+  }
+
+  public async UnLike(_id, user_id): Promise<{}> {
+    try {
+      const blogRecord = await this.blogModel.findByIdAndUpdate({_id}, { $pull: { like: user_id }}, { new: true })
+      return blogRecord.toObject()
     } catch (e) {
       this.logger.error(e);
       throw e;

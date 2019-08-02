@@ -14,6 +14,7 @@ const Comment = new mongoose.Schema(
       ref: 'Blog',
       required: true
     },
+    
     content: {
       type: String,
       required: [true, 'Please enter poster content']

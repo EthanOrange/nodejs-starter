@@ -84,6 +84,49 @@ export default (app: Router) => {
       }
     },
   );
+
+  route.post(
+    '/like',
+    middlewares.isAuth,
+    middlewares.attachCurrentUser,
+    celebrate({
+      body: Joi.object({
+        _id: Joi.string().required(),
+      }),
+    }),
+    async (req: Request, res: Response, next: NextFunction) => {
+      const logger:any = Container.get('logger');
+      try {
+        const blogServiceInstance = Container.get(BlogService);
+        const blog = await blogServiceInstance.Like(req.body._id, req.currentUser._id) 
+        return res.json({ msg: 'like success', type: 1, data: blog }); 
+      } catch (e) {
+        logger.error('🔥 error: %o', e);
+        return next(e);
+      }
+    }
+  )
+  route.post(
+    '/unlike',
+    middlewares.isAuth,
+    middlewares.attachCurrentUser,
+    celebrate({
+      body: Joi.object({
+        _id: Joi.string().required(),
+      }),
+    }),
+    async (req: Request, res: Response, next: NextFunction) => {
+      const logger:any = Container.get('logger');
+      try {
+        const blogServiceInstance = Container.get(BlogService);
+        const blog = await blogServiceInstance.UnLike(req.body._id, req.currentUser._id) 
+        return res.json({ msg: 'unlike success', type: 1, data: blog }); 
+      } catch (e) {
+        logger.error('🔥 error: %o', e);
+        return next(e);
+      }
+    }
+  )
   
   route.get('/list', async (req: Request, res: Response, next: NextFunction) => {
     const logger:any = Container.get('logger');
@@ -108,9 +151,7 @@ export default (app: Router) => {
       try {
         const { length=1 } = req.params
         const blogServiceInstance = Container.get(BlogService);
-        console.time('test')
         const blog = await blogServiceInstance.JobsCreate(length, req.currentUser._id)
-        console.timeEnd('test')
         return res.json({ msg: 'get detail success', type: 1, data: blog })
       } catch (e) {
         logger.error('🔥 error: %o',  e );
